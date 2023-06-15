@@ -1,0 +1,10 @@
+apis/BooksApi.ts
+apis/index.ts
+index.ts
+models/ControllersBooksGetData.ts
+models/ControllersBooksListData.ts
+models/HttputilHTTPError.ts
+models/HttputilHTTPErrorError.ts
+models/ModelsBook.ts
+models/index.ts
+runtime.ts

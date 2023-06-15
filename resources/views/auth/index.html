@@ -1,0 +1,14 @@
+{% extends "../layouts/base-layout.html" %} {% block content %}
+<div class="overflow-x-auto bg-base-100 rounded-box px-3 py-4">
+  <div class="px-4 pt-2 pb-4">
+    <h2 class="text-3xl font-bold mb-4">Auth Providers</h2>
+    <ul class="list-disc list-inside">
+      {% for k, v in ProvidersMap %}
+      <li>
+        <a href="/auth/{{ k }}">{{ v }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock content %}

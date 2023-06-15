@@ -1,0 +1,209 @@
+basePath: /api
+definitions:
+  controllers.BooksGetData:
+    properties:
+      book:
+        $ref: '#/definitions/models.Book'
+    required:
+    - book
+    type: object
+  controllers.BooksListData:
+    properties:
+      books:
+        items:
+          $ref: '#/definitions/models.Book'
+        type: array
+    required:
+    - books
+    type: object
+  httputil.HTTPError:
+    properties:
+      error:
+        $ref: '#/definitions/httputil.HTTPErrorError'
+    type: object
+  httputil.HTTPErrorError:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Book:
+    properties:
+      author:
+        type: string
+      finishedAt:
+        type: string
+      id:
+        type: string
+      purchasedAt:
+        type: string
+      rating:
+        type: integer
+      title:
+        type: string
+    required:
+    - author
+    - id
+    - title
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  termsOfService: http://swagger.io/terms/
+  title: Some API
+  version: "1.0"
+paths:
+  /v1/book:
+    post:
+      consumes:
+      - application/json
+      description: post book
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksGetData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Create book
+      tags:
+      - books
+  /v1/book/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete book by id
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksGetData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Update book by id
+      tags:
+      - books
+    get:
+      consumes:
+      - application/json
+      description: get book by id
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksGetData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Get book by id
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: put book by id
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksGetData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Update book by id
+      tags:
+      - books
+  /v1/books:
+    get:
+      consumes:
+      - application/json
+      description: get books
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksListData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: List books
+      tags:
+      - books
+swagger: "2.0"

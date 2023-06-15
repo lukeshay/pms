@@ -1,0 +1,20 @@
+{
+	auto_https off
+	log stdout
+}
+
+http://pms-kratos.fly.dev {
+	reverse_proxy :4455
+}
+
+0.0.0.0:4455 {
+	reverse_proxy :4455
+}
+
+0.0.0.0:4433 {
+	reverse_proxy :4433
+}
+
+0.0.0.0:4434 {
+	reverse_proxy :4434
+}
