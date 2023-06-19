@@ -125,11 +125,6 @@ func (c *{{ capModel }}sV1Controller) Post(ctx *gin.Context) {
 	{{ lowModel }} := &models.{{ capModel }}{
 		Id:          {{ lowModel }}Id,
 		UserId:      userId,
-		Title:       request.Title,
-		Author:      request.Author,
-		Rating:      request.Rating,
-		PurchasedAt: request.PurchasedAt,
-		FinishedAt:  request.FinishedAt,
 		Timestamps: models.Timestamps{
 			CreatedBy: userId,
 			UpdatedBy: userId,
@@ -172,11 +167,6 @@ func (c *{{ capModel }}sV1Controller) Put(ctx *gin.Context) {
 	{{ lowModel }} := &models.{{ capModel }}{
 		Id:          {{ lowModel }}Id,
 		UserId:      userId,
-		Title:       request.Title,
-		Author:      request.Author,
-		Rating:      request.Rating,
-		PurchasedAt: request.PurchasedAt,
-		FinishedAt:  request.FinishedAt,
 		Timestamps: models.Timestamps{
 			CreatedBy: userId,
 			UpdatedBy: userId,
