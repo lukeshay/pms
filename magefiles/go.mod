@@ -7,6 +7,7 @@ require (
 	github.com/99designs/gqlgen v0.17.2 // indirect
 	github.com/Khan/genqlient v0.5.0 // indirect
 	github.com/adrg/xdg v0.4.0 // indirect
+	github.com/cbroglie/mustache v1.4.0 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/magefile/mage v1.15.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.1 // indirect

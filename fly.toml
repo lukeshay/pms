@@ -7,7 +7,7 @@ app = "pms"
 primary_region = "ord"
 
 [build]
-  image = "registry.fly.io/pms:test"
+   dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 3000

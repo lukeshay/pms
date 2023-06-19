@@ -1,0 +1,85 @@
+package repositories
+
+import (
+	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/lukeshay/pms/pkg/models"
+)
+
+type {{ capModel }}Repository struct {
+	db *sqlx.DB
+}
+
+func New{{ capModel }}Repository(db *sqlx.DB) *{{ capModel }}Repository {
+	return &{{ capModel }}Repository{
+		db: db,
+	}
+}
+
+func (r *{{ capModel }}Repository) CreateTable() {
+	_, err := r.db.Exec(`CREATE TABLE IF NOT EXISTS {{ lowModel }}s (
+		id TEXT PRIMARY KEY,
+		user_id TEXT NOT NULL,
+
+		created_at TIMESTAMP NOT NULL,
+		created_by TEXT NOT NULL,
+		updated_at TIMESTAMP NOT NULL,
+		updated_by TEXT NOT NULL,
+		deleted_at TIMESTAMP,
+		deleted_by TEXT,
+		FOREIGN KEY(user_id) REFERENCES users(id)
+	)`)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *{{ capModel }}Repository) Get(userId, id string) (*models.{{ capModel }}, error) {
+	{{ lowModel }} := models.{{ capModel }}{}
+	err := r.db.Get(&{{ lowModel }}, "SELECT * FROM {{ lowModel }}s WHERE user_id = $1 AND id = $2", userId, id)
+
+	return &{{ lowModel }}, err
+}
+
+func (r *{{ capModel }}Repository) ListByUserId(userId string) (*[]models.{{ capModel }}, error) {
+	{{ lowModel }}s := []models.{{ capModel }}{}
+	err := r.db.Select(&{{ lowModel }}s, "SELECT * FROM {{ lowModel }}s WHERE user_id = $1", userId)
+
+	return &{{ lowModel }}s, err
+}
+
+func (r *{{ capModel }}Repository) Insert({{ lowModel }} *models.{{ capModel }}) error {
+	{{ lowModel }}.CreatedAt = time.Now()
+	{{ lowModel }}.UpdatedAt = time.Now()
+
+	query := `
+		INSERT INTO {{ lowModel }}s (id, user_id, created_at, created_by, updated_at, updated_by) 
+		VALUES (:id, :user_id, :created_at, :created_by, :updated_at, :updated_by)
+	`
+
+	_, err := r.db.NamedExec(query, {{ lowModel }})
+
+	return err
+}
+
+func (r *{{ capModel }}Repository) Update({{ lowModel }} *models.{{ capModel }}) error {
+	{{ lowModel }}.UpdatedAt = time.Now()
+
+	query := `
+		UPDATE {{ lowModel }}s 
+		SET created_at = :created_at, created_by = :created_by, updated_at = :updated_at, updated_by = :updated_by
+		WHERE id = :id AND user_id = :user_id
+	`
+
+	_, err := r.db.NamedExec(query, {{ lowModel }})
+
+	return err
+}
+
+func (r *{{ capModel }}Repository) Delete(userId, id string) error {
+	_, err := r.db.Exec("DELETE FROM {{ lowModel }}s WHERE user_id = $1 AND id = $2", userId, id)
+
+	return err
+}

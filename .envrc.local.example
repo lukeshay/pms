@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export ENVIRONMENT="development"
+
+# openssl rand -hex 64
+export JWT_SECRET="bb08e09cfe42a222f23954a643b3deaa10c37c43c0265eed3e22fd73ffafefe9df70ae661c61b23763226901a4ea04de308e7670a28de11d6cc6dac581031656"

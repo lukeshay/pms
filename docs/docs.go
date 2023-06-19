@@ -21,9 +21,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/book": {
-            "post": {
-                "description": "post book",
+        "/v1/auth/": {
+            "get": {
+                "description": "get jwt claims",
                 "consumes": [
                     "application/json"
                 ],
@@ -31,14 +31,98 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "books"
+                    "Auth"
                 ],
-                "summary": "Create book",
+                "summary": "Get jwt claims",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.BooksGetData"
+                            "$ref": "#/definitions/controllers.AuthGetResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "create user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "Create user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthPostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthPostResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/sign-in": {
+            "post": {
+                "description": "sign in to user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Sign in to user",
+                "parameters": [
+                    {
+                        "description": "Sign in to user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthPostSignInRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthPostResponse"
                         }
                     },
                     "400": {
@@ -62,7 +146,98 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/book/{id}": {
+        "/v1/books/": {
+            "get": {
+                "description": "get books",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "List books",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.BooksListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "post book",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Create book",
+                "parameters": [
+                    {
+                        "description": "Create book",
+                        "name": "book",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.BooksPostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.BooksGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/books/{id}/": {
             "get": {
                 "description": "get book by id",
                 "consumes": [
@@ -88,11 +263,17 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.BooksGetData"
+                            "$ref": "#/definitions/controllers.BooksGetResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -130,17 +311,32 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Update book",
+                        "name": "book",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.BooksPostRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.BooksGetData"
+                            "$ref": "#/definitions/controllers.BooksGetResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -170,7 +366,7 @@ const docTemplate = `{
                 "tags": [
                     "books"
                 ],
-                "summary": "Update book by id",
+                "summary": "Delete book by id",
                 "parameters": [
                     {
                         "type": "string",
@@ -184,60 +380,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.BooksGetData"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/books": {
-            "get": {
-                "description": "get books",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "List books",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.BooksListData"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "$ref": "#/definitions/controllers.BooksDeleteResponse"
                         }
                     },
                     "500": {
@@ -251,7 +394,188 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.BooksGetData": {
+        "auth.Claims": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "createdBy",
+                "email",
+                "emailVerified",
+                "firstName",
+                "id",
+                "lastName",
+                "updatedAt",
+                "updatedBy"
+            ],
+            "properties": {
+                "aud": {
+                    "description": "the ` + "`" + `aud` + "`" + ` (Audience) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "deletedBy": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailVerified": {
+                    "type": "boolean"
+                },
+                "exp": {
+                    "description": "the ` + "`" + `exp` + "`" + ` (Expiration Time) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/jwt.NumericDate"
+                        }
+                    ]
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "iat": {
+                    "description": "the ` + "`" + `iat` + "`" + ` (Issued At) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/jwt.NumericDate"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "iss": {
+                    "description": "the ` + "`" + `iss` + "`" + ` (Issuer) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1",
+                    "type": "string"
+                },
+                "jti": {
+                    "description": "the ` + "`" + `jti` + "`" + ` (JWT ID) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7",
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "nbf": {
+                    "description": "the ` + "`" + `nbf` + "`" + ` (Not Before) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/jwt.NumericDate"
+                        }
+                    ]
+                },
+                "password": {
+                    "type": "string"
+                },
+                "sub": {
+                    "description": "the ` + "`" + `sub` + "`" + ` (Subject) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.AuthGetResponse": {
+            "type": "object",
+            "required": [
+                "claims"
+            ],
+            "properties": {
+                "claims": {
+                    "$ref": "#/definitions/auth.Claims"
+                }
+            }
+        },
+        "controllers.AuthPostRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstName",
+                "lastName",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.AuthPostResponse": {
+            "type": "object",
+            "required": [
+                "tokens",
+                "user"
+            ],
+            "properties": {
+                "tokens": {
+                    "$ref": "#/definitions/controllers.AuthTokens"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                }
+            }
+        },
+        "controllers.AuthPostSignInRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.AuthTokens": {
+            "type": "object",
+            "required": [
+                "authorization"
+            ],
+            "properties": {
+                "authorization": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.BooksDeleteResponse": {
+            "type": "object",
+            "required": [
+                "bookId"
+            ],
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.BooksGetResponse": {
             "type": "object",
             "required": [
                 "book"
@@ -262,7 +586,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.BooksListData": {
+        "controllers.BooksListResponse": {
             "type": "object",
             "required": [
                 "books"
@@ -276,8 +600,38 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.BooksPostRequest": {
+            "type": "object",
+            "required": [
+                "author",
+                "title"
+            ],
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "finishedAt": {
+                    "type": "string"
+                },
+                "purchasedAt": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
         "httputil.HTTPError": {
             "type": "object",
+            "required": [
+                "error"
+            ],
             "properties": {
                 "error": {
                     "$ref": "#/definitions/httputil.HTTPErrorError"
@@ -292,15 +646,40 @@ const docTemplate = `{
                 }
             }
         },
+        "jwt.NumericDate": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Book": {
             "type": "object",
             "required": [
                 "author",
+                "createdAt",
+                "createdBy",
                 "id",
-                "title"
+                "title",
+                "updatedAt",
+                "updatedBy",
+                "userId"
             ],
             "properties": {
                 "author": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "deletedBy": {
                     "type": "string"
                 },
                 "finishedAt": {
@@ -316,6 +695,67 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "createdBy",
+                "email",
+                "emailVerified",
+                "firstName",
+                "id",
+                "lastName",
+                "updatedAt",
+                "updatedBy"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "deletedBy": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailVerified": {
+                    "type": "boolean"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
                     "type": "string"
                 }
             }

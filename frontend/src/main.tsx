@@ -1,15 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, LoaderFunction, RouterProvider } from "react-router-dom";
 
 import "./index.css";
 
-import {Root} from "./routes/root";
+import { Root } from "./routes/root";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		loader: Root.loader,
+		loader: Root.loader as unknown as LoaderFunction,
 		element: <Root />,
 	},
 ]);

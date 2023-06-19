@@ -1,0 +1,7 @@
+package models
+
+type {{ capModel }} struct {
+	Timestamps
+	Id          string     `json:"id" binding:"required" db:"id"`
+	UserId      string     `json:"userId" binding:"required" db:"user_id" fk:"user.id"`
+}

@@ -11,17 +11,15 @@ import (
 
 type Versions struct {
 	alpineVersion string
-	caddyVersion  string
-	kratosVersion string
 	toolVersions  map[string]string
+	sha8          string
 }
 
 func CurrentVersions() *Versions {
 	return &Versions{
 		alpineVersion: os.Getenv("ALPINE_VERSION"),
-		caddyVersion:  os.Getenv("CADDY_VERSION"),
-		kratosVersion: os.Getenv("KRATOS_VERSION"),
 		toolVersions:  toolVersions(),
+		sha8:          os.Getenv("GITHUB_SHA")[:8],
 	}
 }
 
@@ -41,12 +39,8 @@ func (v *Versions) Alpine() string {
 	return v.alpineVersion
 }
 
-func (v *Versions) Caddy() string {
-	return v.caddyVersion
-}
-
-func (v *Versions) Kratos() string {
-	return v.kratosVersion
+func (v *Versions) Sha8() string {
+	return v.sha8
 }
 
 func toolVersions() map[string]string {

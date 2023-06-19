@@ -2,16 +2,40 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
+	"strings"
+	"time"
 
-	"github.com/lukeshay/pms/controllers"
+	"github.com/gin-gonic/gin"
+	"github.com/lukeshay/pms/pkg/adapters"
+	"github.com/lukeshay/pms/pkg/auth"
+	"github.com/lukeshay/pms/pkg/controllers"
+	"github.com/lukeshay/pms/pkg/httputil"
+	"github.com/lukeshay/pms/pkg/repositories"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/swagger"
+	"github.com/gin-contrib/cors"
 
 	_ "github.com/lukeshay/pms/docs"
 )
+
+func RequireAuth() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		claims, err := auth.GetClaims(ctx)
+
+		if err != nil || claims == nil {
+			ctx.JSON(http.StatusUnauthorized, httputil.HTTPError{
+				Error: httputil.HTTPErrorError{
+					Message: "Unauthorized",
+				},
+			})
+
+			return
+		}
+
+		ctx.Next()
+	}
+}
 
 // @title           Some API
 // @version         1.0
@@ -29,47 +53,85 @@ func main() {
 		environment = "production"
 	}
 
-	app := fiber.New()
+	r := gin.Default()
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173",
-		AllowHeaders: "Origin, Content-Type, Accept",
+	db := adapters.GetDB()
+	auther := &auth.Auth{
+		JWTSecret:     os.Getenv("JWT_SECRET"),
+		SigningMethod: auth.SigningMethodHMAC,
+	}
+	userRepository := repositories.NewUserRepository(db)
+	userRepository.CreateTable()
+	bookRepository := repositories.NewBookRepository(db)
+	bookRepository.CreateTable()
+
+	r.Use(gin.Logger(), gin.Recovery(), cors.New(cors.Config{
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "Accept"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type", "Accept-Encoding"},
+		AllowAllOrigins:  true,
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
 	}))
 
-	app.Get("/swagger/*", swagger.HandlerDefault) // default
+	r.Use(func(ctx *gin.Context) {
+		authorization := strings.Replace(ctx.GetHeader("Authorization"), "Bearer ", "", 1)
+		if authorization == "" {
+			println("no authorization")
+			ctx.Next()
+			return
+		}
 
-	app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
-		URL:         "http://localhost:3000/doc.json",
-		DeepLinking: false,
-		// Expand ("list") or Collapse ("none") tag groups by default
-		DocExpansion: "none",
-		// // Prefill OAuth ClientId on Authorize popup
-		// OAuth: &swagger.OAuthConfig{
-		// 	AppName:  "OAuth Provider",
-		// 	ClientId: "21bb4edc-05a7-4afc-86f1-2e151e4ba6e2",
-		// },
-		// // Ability to change OAuth2 redirect uri location
-		// OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
-	}))
+		claims, err := auther.JWTParse(authorization)
+		if err != nil {
+			println("not parsable", err.Error())
+			ctx.Next()
+			return
+		}
 
-	v1 := app.Group("/api/v1")
+		auth.SetClaims(ctx, claims)
+		ctx.Next()
+	})
 
-	booksV1Controller := controllers.NewBooksV1Controller()
-	booksV1 := v1.Group(booksV1Controller.BasePath())
+	v1 := r.Group("/api/v1")
 
-	booksV1.Get("/", booksV1Controller.List)
-	booksV1.Post("/", booksV1Controller.Post)
-	booksV1.Get("/{id:string}", booksV1Controller.Get)
-	booksV1.Put("/{id:string}", booksV1Controller.Put)
-	booksV1.Delete("/{id:string}", booksV1Controller.Delete)
+	booksV1Controller := controllers.NewBooksV1Controller(controllers.BooksV1ControllerInput{
+		BookRepository: bookRepository,
+	})
+	{
+		booksV1 := v1.Group(booksV1Controller.BasePath())
+		{
+			booksV1.Use(RequireAuth())
+
+			booksV1.GET("/", booksV1Controller.List)
+			booksV1.POST("/", booksV1Controller.Post)
+			booksV1.GET("/:id/", booksV1Controller.Get)
+			booksV1.PUT("/:id/", booksV1Controller.Put)
+			booksV1.DELETE("/:id/", booksV1Controller.Delete)
+		}
+	}
+
+	authV1Controller := controllers.NewAuthV1Controller(controllers.NewAuthV1ControllerInput{
+		UserRepository: userRepository,
+		Auth:           auther,
+	})
+	{
+		authV1 := v1.Group(authV1Controller.BasePath())
+		{
+			authV1.GET("/", authV1Controller.Get)
+			authV1.POST("/", authV1Controller.Post)
+			authV1.POST("/sign-in/", authV1Controller.PostSignIn)
+		}
+	}
 
 	if environment != "development" {
-		app.Static("/", "./frontend-dist")
-
-		app.Get("/*", func(ctx *fiber.Ctx) error {
-			return ctx.SendFile("./frontend-dist/index.html")
+		gin.SetMode(gin.ReleaseMode)
+		r.Static("/assets", "./frontend-dist/assets")
+		r.NoRoute(func(c *gin.Context) {
+			c.File("./frontend-dist/index.html")
+			c.Status(200)
 		})
 	}
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(r.Run(":3000"))
 }

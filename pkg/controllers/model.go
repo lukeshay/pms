@@ -1,33 +1,33 @@
 package controllers
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
-type Controller interface {
+type ModelController interface {
 	// Returns the base path for this controller
 	//  GET /<BasePath>/
 	//  Responds: JSON, HTML
-	List(ctx *fiber.Ctx) error
+	List(ctx *gin.Context)
 	// Returns the requested item
 	//  GET /<BasePath>/{id}/
 	//  Responds: JSON, HTML
-	Get(ctx *fiber.Ctx) error
+	Get(ctx *gin.Context)
 	// Creates a new item
 	//  POST /<BasePath>/
 	//  Accepts: JSON, FORM
 	//  Responds: JSON
-	Post(ctx *fiber.Ctx) error
+	Post(ctx *gin.Context)
 	// Updates an item
 	//  PUT /<BasePath>/{id}/
 	//  Accepts: JSON, FORM
 	//  Responds: JSON
-	Put(ctx *fiber.Ctx) error
+	Put(ctx *gin.Context)
 
 	// Deletes an item
 	//  DELETE /<BasePath>/{id}/
 	//  Responds: JSON, REDIRECT
-	Delete(ctx *fiber.Ctx) error
+	Delete(ctx *gin.Context)
 
 	BasePath() string
 }

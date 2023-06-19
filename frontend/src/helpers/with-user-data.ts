@@ -1,5 +1,7 @@
-export const withUserData = async <T>(loader: (...args: any) => T | Promise<T>): Promise<T> => {
-	const result = await loader();
+export const withUserData =
+	<T>(loader: (...args: any) => T | Promise<T>): ((...args: any) => Promise<T>) =>
+	async (...args: any) => {
+		const result = await loader(...args);
 
-	return result;
-};
+		return result;
+	};

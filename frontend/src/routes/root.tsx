@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BooksApi, Configuration } from "../api";
 import { useLoaderData } from "../hooks/use-loader-data";
 import { BaseLayout } from "../layouts/base-layout";
-import {withUserData} from "../helpers/with-user-data"
+import { withUserData } from "../helpers/with-user-data";
 
 const loader = withUserData(async () => {
 	const booksApi = new BooksApi(

@@ -1,13 +1,133 @@
 basePath: /api
 definitions:
-  controllers.BooksGetData:
+  auth.Claims:
+    properties:
+      aud:
+        description: the `aud` (Audience) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3
+        items:
+          type: string
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      deletedAt:
+        type: string
+      deletedBy:
+        type: string
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      exp:
+        allOf:
+        - $ref: '#/definitions/jwt.NumericDate'
+        description: the `exp` (Expiration Time) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4
+      firstName:
+        type: string
+      iat:
+        allOf:
+        - $ref: '#/definitions/jwt.NumericDate'
+        description: the `iat` (Issued At) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6
+      id:
+        type: string
+      iss:
+        description: the `iss` (Issuer) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
+        type: string
+      jti:
+        description: the `jti` (JWT ID) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7
+        type: string
+      lastName:
+        type: string
+      nbf:
+        allOf:
+        - $ref: '#/definitions/jwt.NumericDate'
+        description: the `nbf` (Not Before) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5
+      password:
+        type: string
+      sub:
+        description: the `sub` (Subject) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+    required:
+    - createdAt
+    - createdBy
+    - email
+    - emailVerified
+    - firstName
+    - id
+    - lastName
+    - updatedAt
+    - updatedBy
+    type: object
+  controllers.AuthGetResponse:
+    properties:
+      claims:
+        $ref: '#/definitions/auth.Claims'
+    required:
+    - claims
+    type: object
+  controllers.AuthPostRequest:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - firstName
+    - lastName
+    - password
+    type: object
+  controllers.AuthPostResponse:
+    properties:
+      tokens:
+        $ref: '#/definitions/controllers.AuthTokens'
+      user:
+        $ref: '#/definitions/models.User'
+    required:
+    - tokens
+    - user
+    type: object
+  controllers.AuthPostSignInRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  controllers.AuthTokens:
+    properties:
+      authorization:
+        type: string
+    required:
+    - authorization
+    type: object
+  controllers.BooksDeleteResponse:
+    properties:
+      bookId:
+        type: string
+    required:
+    - bookId
+    type: object
+  controllers.BooksGetResponse:
     properties:
       book:
         $ref: '#/definitions/models.Book'
     required:
     - book
     type: object
-  controllers.BooksListData:
+  controllers.BooksListResponse:
     properties:
       books:
         items:
@@ -16,19 +136,52 @@ definitions:
     required:
     - books
     type: object
+  controllers.BooksPostRequest:
+    properties:
+      author:
+        type: string
+      finishedAt:
+        type: string
+      purchasedAt:
+        type: string
+      rating:
+        type: integer
+      title:
+        type: string
+      userId:
+        type: string
+    required:
+    - author
+    - title
+    type: object
   httputil.HTTPError:
     properties:
       error:
         $ref: '#/definitions/httputil.HTTPErrorError'
+    required:
+    - error
     type: object
   httputil.HTTPErrorError:
     properties:
       message:
         type: string
     type: object
+  jwt.NumericDate:
+    properties:
+      time.Time:
+        type: string
+    type: object
   models.Book:
     properties:
       author:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      deletedAt:
+        type: string
+      deletedBy:
         type: string
       finishedAt:
         type: string
@@ -40,10 +193,58 @@ definitions:
         type: integer
       title:
         type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      userId:
+        type: string
     required:
     - author
+    - createdAt
+    - createdBy
     - id
     - title
+    - updatedAt
+    - updatedBy
+    - userId
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      deletedAt:
+        type: string
+      deletedBy:
+        type: string
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+    required:
+    - createdAt
+    - createdBy
+    - email
+    - emailVerified
+    - firstName
+    - id
+    - lastName
+    - updatedAt
+    - updatedBy
     type: object
 info:
   contact:
@@ -55,18 +256,73 @@ info:
   title: Some API
   version: "1.0"
 paths:
-  /v1/book:
-    post:
+  /v1/auth/:
+    get:
       consumes:
       - application/json
-      description: post book
+      description: get jwt claims
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.BooksGetData'
+            $ref: '#/definitions/controllers.AuthGetResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Get jwt claims
+      tags:
+      - Auth
+    post:
+      consumes:
+      - application/json
+      description: create user
+      parameters:
+      - description: Create user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.AuthPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.AuthPostResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Create user
+      tags:
+      - Auth
+  /v1/auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: sign in to user
+      parameters:
+      - description: Sign in to user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.AuthPostSignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.AuthPostResponse'
         "400":
           description: Bad Request
           schema:
@@ -79,10 +335,70 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputil.HTTPError'
+      summary: Sign in to user
+      tags:
+      - Auth
+  /v1/books/:
+    get:
+      consumes:
+      - application/json
+      description: get books
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: List books
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: post book
+      parameters:
+      - description: Create book
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.BooksPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.BooksGetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
       summary: Create book
       tags:
       - books
-  /v1/book/{id}:
+  /v1/books/{id}/:
     delete:
       consumes:
       - application/json
@@ -99,20 +415,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.BooksGetData'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
+            $ref: '#/definitions/controllers.BooksDeleteResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputil.HTTPError'
-      summary: Update book by id
+      summary: Delete book by id
       tags:
       - books
     get:
@@ -131,9 +439,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.BooksGetData'
+            $ref: '#/definitions/controllers.BooksGetResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/httputil.HTTPError'
         "404":
@@ -157,15 +469,25 @@ paths:
         name: id
         required: true
         type: string
+      - description: Update book
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.BooksPostRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.BooksGetData'
+            $ref: '#/definitions/controllers.BooksGetResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/httputil.HTTPError'
         "404":
@@ -177,33 +499,6 @@ paths:
           schema:
             $ref: '#/definitions/httputil.HTTPError'
       summary: Update book by id
-      tags:
-      - books
-  /v1/books:
-    get:
-      consumes:
-      - application/json
-      description: get books
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.BooksListData'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: List books
       tags:
       - books
 swagger: "2.0"

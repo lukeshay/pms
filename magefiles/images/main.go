@@ -25,42 +25,55 @@ func NewImage(ctx context.Context, dag *dagger.Client) *Image {
 	return image
 }
 
-func (i *Image) NewContainer(name string, runtime string, src *dagger.Directory) *dagger.Container {
-	container := i.dag.Pipeline(name).Container().From(runtime)
+func (i *Image) NewContainer(name string, runtime string) *dagger.Container {
+	return i.dag.Pipeline(name).Container().From(runtime)
+}
 
-	return container.WithDirectory("/src", src).WithWorkdir("/src")
+func (i *Image) hostDir(opts dagger.HostDirectoryOpts) *dagger.Directory {
+	return i.dag.Host().Directory(".", opts)
 }
 
 func (i *Image) BuildGo(name string) *dagger.Container {
-	src := i.dag.Host().Directory(".", dagger.HostDirectoryOpts{
-		Exclude: []string{"frontend", "magefiles"},
+	src := i.hostDir(dagger.HostDirectoryOpts{
+		Exclude: []string{"frontend", "magefiles", "build"},
+	})
+	installSrc := i.hostDir(dagger.HostDirectoryOpts{
+		Include: []string{"go.mod", "go.sum"},
 	})
 
-	return i.NewContainer(name, fmt.Sprintf("golang:%s-alpine%s", i.versions.Golang(), i.versions.Alpine()), src).WithExec([]string{"go", "install"}).WithExec([]string{"go", "build", "-o", "build/"})
+	return i.NewContainer(name, fmt.Sprintf("golang:%s-alpine%s", i.versions.Golang(), i.versions.Alpine())).
+		WithDirectory("/src", installSrc).
+		WithWorkdir("/src").
+		WithExec([]string{"go", "mod", "download"}).
+		WithDirectory("/src", src).
+		WithExec([]string{"go", "build", "-o", "build/"})
 }
 
 func (i *Image) BuildNode(name string) *dagger.Container {
-	src := i.dag.Host().Directory("frontend", dagger.HostDirectoryOpts{
-		Exclude: []string{"node_modules", "dist"},
+	src := i.hostDir(dagger.HostDirectoryOpts{
+		Exclude: []string{"frontend/node_modules", "frontend/dist"},
+		Include: []string{"frontend", "docs"},
+	})
+	installSrc := i.hostDir(dagger.HostDirectoryOpts{
+		Include: []string{"frontend/package.json", "frontend/package-lock.json"},
 	})
 
-	return i.NewContainer(name, fmt.Sprintf("node:%s-alpine%s", i.versions.NodeJS(), i.versions.Alpine()), src).WithExec([]string{"npm", "ci"}).WithExec([]string{"npm", "run", "build"})
+	return i.NewContainer(name, fmt.Sprintf("node:%s-alpine%s", i.versions.NodeJS(), i.versions.Alpine())).
+		WithExec([]string{"apk", "add", "--no-cache", "openjdk17"}).
+		WithDirectory("/src", installSrc).
+		WithWorkdir("/src/frontend").
+		WithExec([]string{"npm", "ci"}).
+		WithDirectory("/src", src).
+		WithExec([]string{"npm", "run", "generate"}).
+		WithExec([]string{"npm", "run", "build"})
 }
 
 func (i *Image) BuildRuntimeContainer(name string) *dagger.Container {
 	src := i.dag.Host().Directory("build/tmp")
 
-	return i.NewContainer(name, fmt.Sprintf("alpine:%s", i.versions.Alpine()), src).WithExposedPort(3000).WithEntrypoint([]string{"./pms"})
-}
-
-func (i *Image) BuildKratosContainer(name string) *dagger.Container {
-	kratosDirectory := i.dag.Host().Directory("kratos/config")
-
-	return i.dag.Pipeline("Build - Kratos").Container().From(fmt.Sprintf("caddy:%s", i.versions.Caddy())).
-		WithExec([]string{"apk", "add", "--no-cache", "curl", "bash", "coreutils"}).
-		WithExec([]string{"curl", "-sSfL", "https://raw.githubusercontent.com/ory/kratos/master/install.sh", "-o", "install.sh"}).
-		WithExec([]string{"chmod", "+x", "install.sh"}).
-		WithExec([]string{"bash", "install.sh", "-d", "-b", ".", fmt.Sprintf("v%s", i.versions.Kratos())}).
-		WithDirectory("/src", kratosDirectory).
-		WithEntrypoint([]string{"/src/entrypoint.sh"})
+	return i.NewContainer(name, fmt.Sprintf("alpine:%s", i.versions.Alpine())).
+		WithDirectory("/src", src).
+		WithWorkdir("/src").
+		WithExposedPort(3000).
+		WithEntrypoint([]string{"/src/pms"})
 }

@@ -1,0 +1,222 @@
+package controllers
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/lukeshay/pms/pkg/auth"
+	"github.com/lukeshay/pms/pkg/httputil"
+	"github.com/lukeshay/pms/pkg/models"
+	"github.com/lukeshay/pms/pkg/repositories"
+)
+
+type {{ capModel }}sV1Controller struct {
+	ModelController
+	basePath       string
+	{{ lowModel }}Repository *repositories.{{ capModel }}Repository
+	auth           *auth.Auth
+}
+
+type {{ capModel }}sV1ControllerInput struct {
+	{{ capModel }}Repository *repositories.{{ capModel }}Repository
+}
+
+func New{{ capModel }}sV1Controller(input {{ capModel }}sV1ControllerInput) ModelController {
+	return &{{ capModel }}sV1Controller{
+		basePath:       "/{{ lowModel }}s",
+		{{ lowModel }}Repository: input.{{ capModel }}Repository,
+	}
+}
+
+func (c *{{ capModel }}sV1Controller) BasePath() string {
+	return c.basePath
+}
+
+type {{ capModel }}sListResponse struct {
+	{{ capModel }}s []models.{{ capModel }} `json:"{{ lowModel }}s" binding:"required"`
+}
+
+// {{ capModel }}sList godoc
+// @Summary      List {{ lowModel }}s
+// @Description  get {{ lowModel }}s
+// @Tags         {{ lowModel }}s
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  {{ capModel }}sListResponse
+// @Failure      400  {object}  httputil.HTTPError
+// @Failure      403  {object}  httputil.HTTPError
+// @Failure      500  {object}  httputil.HTTPError
+// @Router       /v1/{{ lowModel }}s/ [get]
+func (c *{{ capModel }}sV1Controller) List(ctx *gin.Context) {
+	{{ lowModel }}s, err := c.{{ lowModel }}Repository.ListByUserId(auth.RequireClaims(ctx).User.Id)
+	if !httputil.RespondInternalServerErrorQuery(ctx, "Unknown error", {{ lowModel }}s, err) {
+		return
+	}
+
+	httputil.RespondOK(ctx, {{ capModel }}sListResponse{
+		{{ capModel }}s: *{{ lowModel }}s,
+	})
+}
+
+type {{ capModel }}sGetResponse struct {
+	{{ capModel }} models.{{ capModel }} `json:"{{ lowModel }}" binding:"required"`
+}
+
+// {{ capModel }}sGet godoc
+// @Summary      Get {{ lowModel }} by id
+// @Description  get {{ lowModel }} by id
+// @Tags         {{ lowModel }}s
+// @Accept       json
+// @Produce      json
+// @Param 			 id path string true "{{ capModel }} ID"
+// @Success      200  {object}  {{ capModel }}sGetResponse
+// @Failure      400  {object}  httputil.HTTPError
+// @Failure      403  {object}  httputil.HTTPError
+// @Failure      404  {object}  httputil.HTTPError
+// @Failure      500  {object}  httputil.HTTPError
+// @Router       /v1/{{ lowModel }}s/{id}/ [get]
+func (c *{{ capModel }}sV1Controller) Get(ctx *gin.Context) {
+	{{ lowModel }}Id := ctx.Param("id")
+	userId := auth.RequireClaims(ctx).User.Id
+
+	{{ lowModel }}, err := c.{{ lowModel }}Repository.Get(userId, {{ lowModel }}Id)
+	if !httputil.RespondNotFoundQuery(ctx, fmt.Sprintf("{{ capModel }} with id %s not found", {{ lowModel }}Id), {{ lowModel }}, err) {
+		return
+	}
+
+	ctx.JSON(http.StatusOK, {{ capModel }}sGetResponse{
+		{{ capModel }}: *{{ lowModel }},
+	})
+}
+
+type {{ capModel }}sPostRequest struct {
+	UserId      string     `json:"userId"`
+	Title       string     `json:"title" binding:"required"`
+	Author      string     `json:"author" binding:"required"`
+	Rating      int8       `json:"rating"`
+	PurchasedAt *time.Time `json:"purchasedAt"`
+	FinishedAt  *time.Time `json:"finishedAt"`
+}
+
+// {{ capModel }}sPost godoc
+// @Summary      Create {{ lowModel }}
+// @Description  post {{ lowModel }}
+// @Tags         {{ lowModel }}s
+// @Accept       json
+// @Produce      json
+// @Param			   {{ lowModel }}	body		  {{ capModel }}sPostRequest    true  "Create {{ lowModel }}"
+// @Success      200  {object}  {{ capModel }}sGetResponse
+// @Failure      400  {object}  httputil.HTTPError
+// @Failure      403  {object}  httputil.HTTPError
+// @Failure      500  {object}  httputil.HTTPError
+// @Router       /v1/{{ lowModel }}s/ [post]
+func (c *{{ capModel }}sV1Controller) Post(ctx *gin.Context) {
+	var request {{ capModel }}sPostRequest
+	if !httputil.ShouldBindJSON(ctx, &request) {
+		return
+	}
+
+	userId := auth.RequireClaims(ctx).User.Id
+	{{ lowModel }}Id := uuid.NewString()
+
+	{{ lowModel }} := &models.{{ capModel }}{
+		Id:          {{ lowModel }}Id,
+		UserId:      userId,
+		Title:       request.Title,
+		Author:      request.Author,
+		Rating:      request.Rating,
+		PurchasedAt: request.PurchasedAt,
+		FinishedAt:  request.FinishedAt,
+		Timestamps: models.Timestamps{
+			CreatedBy: userId,
+			UpdatedBy: userId,
+		},
+	}
+
+	err := c.{{ lowModel }}Repository.Insert({{ lowModel }})
+	if !httputil.RespondInternalServerErrorQuery(ctx, "Unknown error", {{ lowModel }}, err) {
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, {{ capModel }}sGetResponse{
+		{{ capModel }}: *{{ lowModel }},
+	})
+}
+
+// {{ capModel }}sPut godoc
+// @Summary      Update {{ lowModel }} by id
+// @Description  put {{ lowModel }} by id
+// @Tags         {{ lowModel }}s
+// @Accept       json
+// @Produce      json
+// @Param 			 id path string true "{{ capModel }} ID"
+// @Param			   {{ lowModel }}	body		  {{ capModel }}sPostRequest    true  "Update {{ lowModel }}"
+// @Success      200  {object}  {{ capModel }}sGetResponse
+// @Failure      400  {object}  httputil.HTTPError
+// @Failure      403  {object}  httputil.HTTPError
+// @Failure      404  {object}  httputil.HTTPError
+// @Failure      500  {object}  httputil.HTTPError
+// @Router       /v1/{{ lowModel }}s/{id}/ [put]
+func (c *{{ capModel }}sV1Controller) Put(ctx *gin.Context) {
+	var request {{ capModel }}sPostRequest
+	if !httputil.ShouldBindJSON(ctx, &request) {
+		return
+	}
+
+	userId := auth.RequireClaims(ctx).User.Id
+	{{ lowModel }}Id := ctx.Param("id")
+
+	{{ lowModel }} := &models.{{ capModel }}{
+		Id:          {{ lowModel }}Id,
+		UserId:      userId,
+		Title:       request.Title,
+		Author:      request.Author,
+		Rating:      request.Rating,
+		PurchasedAt: request.PurchasedAt,
+		FinishedAt:  request.FinishedAt,
+		Timestamps: models.Timestamps{
+			CreatedBy: userId,
+			UpdatedBy: userId,
+		},
+	}
+
+	err := c.{{ lowModel }}Repository.Update({{ lowModel }})
+	if !httputil.RespondInternalServerErrorQuery(ctx, "Unknown error", {{ lowModel }}, err) {
+		return
+	}
+
+	ctx.JSON(http.StatusOK, {{ capModel }}sGetResponse{
+		{{ capModel }}: *{{ lowModel }},
+	})
+}
+
+type {{ capModel }}sDeleteResponse struct {
+	{{ capModel }}Id string `json:"{{ lowModel }}Id" binding:"required"`
+}
+
+// {{ capModel }}sDelete godoc
+// @Summary      Delete {{ lowModel }} by id
+// @Description  delete {{ lowModel }} by id
+// @Tags         {{ lowModel }}s
+// @Accept       json
+// @Produce      json
+// @Param 			 id path string true "{{ capModel }} ID"
+// @Success      200  {object}  {{ capModel }}sDeleteResponse
+// @Failure      500  {object}  httputil.HTTPError
+// @Router       /v1/{{ lowModel }}s/{id}/ [delete]
+func (c *{{ capModel }}sV1Controller) Delete(ctx *gin.Context) {
+	userId := auth.RequireClaims(ctx).User.Id
+	{{ lowModel }}Id := ctx.Param("id")
+
+	if err := c.{{ lowModel }}Repository.Delete(userId, {{ lowModel }}Id); err != nil {
+		httputil.RespondInternalServerError(ctx, "Unknown error")
+		return
+	}
+
+	httputil.RespondOK(ctx, {{ capModel }}sDeleteResponse{
+		{{ capModel }}Id: {{ lowModel }}Id,
+	})
+}
