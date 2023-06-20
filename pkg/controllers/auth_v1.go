@@ -147,7 +147,7 @@ type AuthPostSignInRequest struct {
 // @Failure      400  {object}  httputil.HTTPError
 // @Failure      404  {object}  httputil.HTTPError
 // @Failure      500  {object}  httputil.HTTPError
-// @Router       /v1/auth/sign-in [post]
+// @Router       /v1/auth/sign-in/ [post]
 func (c *AuthV1Controller) PostSignIn(ctx *gin.Context) {
 	var request AuthPostSignInRequest
 

@@ -12,117 +12,112 @@
 import { exists, mapValues } from "../runtime";
 /**
  * @export
- * @interface ModelsBook
+ * @interface ModelsUser
  */
-export interface ModelsBook {
+export interface ModelsUser {
 	/**
-	 * @memberof ModelsBook
-	 * @type {string}
-	 */
-	author: string;
-	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	createdAt: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	createdBy: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	deletedAt?: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	deletedBy?: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
-	finishedAt?: string;
+	email: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
+	 * @type {boolean}
+	 */
+	emailVerified: boolean;
+	/**
+	 * @memberof ModelsUser
+	 * @type {string}
+	 */
+	firstName: string;
+	/**
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	id: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
-	purchasedAt?: string;
+	lastName: string;
 	/**
-	 * @memberof ModelsBook
-	 * @type {number}
-	 */
-	rating?: number;
-	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
-	title: string;
+	password?: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	updatedAt: string;
 	/**
-	 * @memberof ModelsBook
+	 * @memberof ModelsUser
 	 * @type {string}
 	 */
 	updatedBy: string;
-	/**
-	 * @memberof ModelsBook
-	 * @type {string}
-	 */
-	userId: string;
 }
 
-/** Check if a given object implements the ModelsBook interface. */
-export function instanceOfModelsBook(value: object): boolean {
+/** Check if a given object implements the ModelsUser interface. */
+export function instanceOfModelsUser(value: object): boolean {
 	let isInstance = true;
-	isInstance = isInstance && "author" in value;
 	isInstance = isInstance && "createdAt" in value;
 	isInstance = isInstance && "createdBy" in value;
+	isInstance = isInstance && "email" in value;
+	isInstance = isInstance && "emailVerified" in value;
+	isInstance = isInstance && "firstName" in value;
 	isInstance = isInstance && "id" in value;
-	isInstance = isInstance && "title" in value;
+	isInstance = isInstance && "lastName" in value;
 	isInstance = isInstance && "updatedAt" in value;
 	isInstance = isInstance && "updatedBy" in value;
-	isInstance = isInstance && "userId" in value;
 
 	return isInstance;
 }
 
-export function ModelsBookFromJSON(json: any): ModelsBook {
-	return ModelsBookFromJSONTyped(json, false);
+export function ModelsUserFromJSON(json: any): ModelsUser {
+	return ModelsUserFromJSONTyped(json, false);
 }
 
-export function ModelsBookFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModelsBook {
+export function ModelsUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModelsUser {
 	if (json === undefined || json === null) {
 		return json;
 	}
 	return {
-		author: json["author"],
 		createdAt: json["createdAt"],
 		createdBy: json["createdBy"],
 		deletedAt: !exists(json, "deletedAt") ? undefined : json["deletedAt"],
 		deletedBy: !exists(json, "deletedBy") ? undefined : json["deletedBy"],
-		finishedAt: !exists(json, "finishedAt") ? undefined : json["finishedAt"],
+		email: json["email"],
+		emailVerified: json["emailVerified"],
+		firstName: json["firstName"],
 		id: json["id"],
-		purchasedAt: !exists(json, "purchasedAt") ? undefined : json["purchasedAt"],
-		rating: !exists(json, "rating") ? undefined : json["rating"],
-		title: json["title"],
+		lastName: json["lastName"],
+		password: !exists(json, "password") ? undefined : json["password"],
 		updatedAt: json["updatedAt"],
 		updatedBy: json["updatedBy"],
-		userId: json["userId"],
 	};
 }
 
-export function ModelsBookToJSON(value?: ModelsBook | null): any {
+export function ModelsUserToJSON(value?: ModelsUser | null): any {
 	if (value === undefined) {
 		return undefined;
 	}
@@ -130,18 +125,17 @@ export function ModelsBookToJSON(value?: ModelsBook | null): any {
 		return null;
 	}
 	return {
-		author: value.author,
 		createdAt: value.createdAt,
 		createdBy: value.createdBy,
 		deletedAt: value.deletedAt,
 		deletedBy: value.deletedBy,
-		finishedAt: value.finishedAt,
+		email: value.email,
+		emailVerified: value.emailVerified,
+		firstName: value.firstName,
 		id: value.id,
-		purchasedAt: value.purchasedAt,
-		rating: value.rating,
-		title: value.title,
+		lastName: value.lastName,
+		password: value.password,
 		updatedAt: value.updatedAt,
 		updatedBy: value.updatedBy,
-		userId: value.userId,
 	};
 }

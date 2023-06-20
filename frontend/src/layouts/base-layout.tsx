@@ -1,36 +1,88 @@
 import { FC, ReactNode } from "react";
+import { AuthClaims } from "../api";
+import { Link, useNavigate } from "react-router-dom";
+import { useTokens } from "../hooks/use-tokens";
+import { XIcon } from "lucide-react";
 
-export const BaseLayout: FC<{ children: ReactNode }> = ({ children }) => (
-	<div className="flex min-h-screen justify-center bg-base-200 p-6">
-		<div className="w-full max-w-6xl">
-			<nav className="navbar rounded-box bg-base-100">
-				<div className="flex-1">
-					<a className="btn-ghost btn text-xl normal-case">daisyUI</a>
-				</div>
-				<div className="flex-none">
-					<ul className="menu menu-horizontal px-1">
-						<li>
-							<a>Link</a>
-						</li>
-						<li>
-							<details>
-								<summary>Parent</summary>
-								<ul className="bg-base-100 p-2">
+export type BaseLayoutProps = {
+	children: ReactNode;
+	claims?: AuthClaims;
+	splitPanel?: ReactNode;
+	onSplitPanelClose?: () => void;
+};
+
+export const BaseLayout: FC<BaseLayoutProps> = ({ children, claims, splitPanel, onSplitPanelClose }) => {
+	const { setTokens } = useTokens();
+	const navigate = useNavigate();
+
+	return (
+		<div className="flex min-h-screen bg-base-200">
+			<div className="flex w-full justify-center px-3 py-6">
+				<div className="w-full max-w-6xl">
+					<nav className="navbar rounded-box bg-base-100">
+						<div className="flex-1">
+							<Link to="/" className="btn-ghost btn text-xl normal-case">
+								daisyUI
+							</Link>
+						</div>
+						<div className="flex-none">
+							<ul className="menu menu-horizontal px-1">
+								{claims && (
 									<li>
-										<a>Link 1</a>
+										<Link to="/">{"Books"}</Link>
 									</li>
-									<li>
-										<a>Link 2</a>
-									</li>
-								</ul>
-							</details>
-						</li>
-					</ul>
+								)}
+								<li>
+									<details>
+										<summary>Profile</summary>
+										<ul className="bg-base-100 p-2">
+											{claims ? (
+												<>
+													<li>
+														<Link to="/profile">{"Profile"}</Link>
+													</li>
+													<li>
+														<button
+															onClick={() => {
+																setTokens();
+																navigate("/sign-in");
+															}}
+														>
+															{"Sign Out"}
+														</button>
+													</li>
+												</>
+											) : (
+												<li>
+													<Link to="/sign-in">{"Sign In"}</Link>
+												</li>
+											)}
+										</ul>
+									</details>
+								</li>
+							</ul>
+						</div>
+					</nav>
+					<section id="content" className="pb-16 pt-8">
+						{children}
+					</section>
 				</div>
-			</nav>
-			<section id="content" className="pb-16 pt-8">
-				{children}
-			</section>
+			</div>
+			{splitPanel && (
+				<div className="min-w-[30rem] border border-base-100">
+					<div>
+						<button
+							onClick={() => {
+								onSplitPanelClose();
+							}}
+							className="btn-ghost btn-sm btn-circle float-right flex items-center justify-center"
+						>
+							<XIcon />
+						</button>
+					</div>
+					<div className="p-4 pt-8">{splitPanel}</div>
+				</div>
+			)}
 		</div>
-	</div>
-);
+	);
+};

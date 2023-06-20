@@ -15,41 +15,41 @@ import { ModelsBookFromJSON, ModelsBookFromJSONTyped, ModelsBookToJSON } from ".
 
 /**
  * @export
- * @interface ControllersBooksListData
+ * @interface ControllersBooksGetResponse
  */
-export interface ControllersBooksListData {
+export interface ControllersBooksGetResponse {
 	/**
-	 * @memberof ControllersBooksListData
-	 * @type {ModelsBook[]}
+	 * @memberof ControllersBooksGetResponse
+	 * @type {ModelsBook}
 	 */
-	books: Array<ModelsBook>;
+	book: ModelsBook;
 }
 
-/** Check if a given object implements the ControllersBooksListData interface. */
-export function instanceOfControllersBooksListData(value: object): boolean {
+/** Check if a given object implements the ControllersBooksGetResponse interface. */
+export function instanceOfControllersBooksGetResponse(value: object): boolean {
 	let isInstance = true;
-	isInstance = isInstance && "books" in value;
+	isInstance = isInstance && "book" in value;
 
 	return isInstance;
 }
 
-export function ControllersBooksListDataFromJSON(json: any): ControllersBooksListData {
-	return ControllersBooksListDataFromJSONTyped(json, false);
+export function ControllersBooksGetResponseFromJSON(json: any): ControllersBooksGetResponse {
+	return ControllersBooksGetResponseFromJSONTyped(json, false);
 }
 
-export function ControllersBooksListDataFromJSONTyped(
+export function ControllersBooksGetResponseFromJSONTyped(
 	json: any,
 	ignoreDiscriminator: boolean,
-): ControllersBooksListData {
+): ControllersBooksGetResponse {
 	if (json === undefined || json === null) {
 		return json;
 	}
 	return {
-		books: (json["books"] as Array<any>).map(ModelsBookFromJSON),
+		book: ModelsBookFromJSON(json["book"]),
 	};
 }
 
-export function ControllersBooksListDataToJSON(value?: ControllersBooksListData | null): any {
+export function ControllersBooksGetResponseToJSON(value?: ControllersBooksGetResponse | null): any {
 	if (value === undefined) {
 		return undefined;
 	}
@@ -57,6 +57,6 @@ export function ControllersBooksListDataToJSON(value?: ControllersBooksListData 
 		return null;
 	}
 	return {
-		books: (value.books as Array<any>).map(ModelsBookToJSON),
+		book: ModelsBookToJSON(value.book),
 	};
 }

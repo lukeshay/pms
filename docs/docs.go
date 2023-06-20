@@ -94,7 +94,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/auth/sign-in": {
+        "/v1/auth/sign-in/": {
             "post": {
                 "description": "sign in to user",
                 "consumes": [
@@ -759,6 +759,14 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Description for what is this security definition being used",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

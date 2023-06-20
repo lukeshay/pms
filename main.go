@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lukeshay/pms/pkg/adapters"
@@ -13,8 +12,6 @@ import (
 	"github.com/lukeshay/pms/pkg/controllers"
 	"github.com/lukeshay/pms/pkg/httputil"
 	"github.com/lukeshay/pms/pkg/repositories"
-
-	"github.com/gin-contrib/cors"
 
 	_ "github.com/lukeshay/pms/docs"
 )
@@ -37,6 +34,22 @@ func RequireAuth() gin.HandlerFunc {
 	}
 }
 
+func Cors() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 // @title           Some API
 // @version         1.0
 // @description     This is a sample server celler server.
@@ -45,6 +58,11 @@ func RequireAuth() gin.HandlerFunc {
 // @contact.name   API Support
 // @contact.url    http://www.swagger.io/support
 // @contact.email  support@swagger.io
+
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in                         header
+//	@name                       Authorization
+//	@description                Description for what is this security definition being used
 
 // @BasePath  /api
 func main() {
@@ -65,22 +83,23 @@ func main() {
 	bookRepository := repositories.NewBookRepository(db)
 	bookRepository.CreateTable()
 
-	r.Use(gin.Logger(), gin.Recovery(), cors.New(cors.Config{
-		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "Accept"},
-		ExposeHeaders:    []string{"Content-Length", "Content-Type", "Accept-Encoding"},
-		AllowAllOrigins:  true,
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	r.Use(gin.Logger(), gin.Recovery(), Cors())
 
 	r.Use(func(ctx *gin.Context) {
-		authorization := strings.Replace(ctx.GetHeader("Authorization"), "Bearer ", "", 1)
+		authorization := ctx.GetHeader("Authorization")
 		if authorization == "" {
-			println("no authorization")
-			ctx.Next()
-			return
+			println("no authorization, checking cookies")
+			var err error
+			authorization, err = ctx.Cookie("Authorization")
+
+			if err != nil {
+				println("no cookie", err.Error())
+				ctx.Next()
+				return
+			}
 		}
+
+		authorization = strings.Replace(authorization, "Bearer ", "", 1)
 
 		claims, err := auther.JWTParse(authorization)
 		if err != nil {
@@ -135,3 +154,6 @@ func main() {
 
 	log.Fatal(r.Run(":3000"))
 }
+
+// /api/v1/auth/sign-in/
+// /api/v1/auth/sign-in/

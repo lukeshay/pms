@@ -304,7 +304,7 @@ paths:
       summary: Create user
       tags:
       - Auth
-  /v1/auth/sign-in:
+  /v1/auth/sign-in/:
     post:
       consumes:
       - application/json
@@ -501,4 +501,10 @@ paths:
       summary: Update book by id
       tags:
       - books
+securityDefinitions:
+  ApiKeyAuth:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

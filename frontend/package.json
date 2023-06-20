@@ -13,10 +13,18 @@
 	},
 	"prettier": "@lshay/prettier-config",
 	"dependencies": {
+		"@headlessui/react": "^1.7.15",
+		"@radix-ui/react-dialog": "^1.0.4",
+		"class-variance-authority": "^0.6.0",
+		"clsx": "^1.2.1",
+		"lucide-react": "^0.246.0",
 		"million": "^2.4.6-beta.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"react-router-dom": "^6.12.1"
+		"react-hook-form": "^7.45.0",
+		"react-router-dom": "^6.12.1",
+		"tailwind-merge": "^1.13.2",
+		"zustand": "^4.3.8"
 	},
 	"devDependencies": {
 		"@lshay/prettier-config": "^0.5.5",

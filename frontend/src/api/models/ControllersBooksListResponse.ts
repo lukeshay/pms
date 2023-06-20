@@ -15,32 +15,32 @@ import { ModelsBookFromJSON, ModelsBookFromJSONTyped, ModelsBookToJSON } from ".
 
 /**
  * @export
- * @interface ControllersBooksListData
+ * @interface ControllersBooksListResponse
  */
-export interface ControllersBooksListData {
+export interface ControllersBooksListResponse {
 	/**
-	 * @memberof ControllersBooksListData
+	 * @memberof ControllersBooksListResponse
 	 * @type {ModelsBook[]}
 	 */
 	books: Array<ModelsBook>;
 }
 
-/** Check if a given object implements the ControllersBooksListData interface. */
-export function instanceOfControllersBooksListData(value: object): boolean {
+/** Check if a given object implements the ControllersBooksListResponse interface. */
+export function instanceOfControllersBooksListResponse(value: object): boolean {
 	let isInstance = true;
 	isInstance = isInstance && "books" in value;
 
 	return isInstance;
 }
 
-export function ControllersBooksListDataFromJSON(json: any): ControllersBooksListData {
-	return ControllersBooksListDataFromJSONTyped(json, false);
+export function ControllersBooksListResponseFromJSON(json: any): ControllersBooksListResponse {
+	return ControllersBooksListResponseFromJSONTyped(json, false);
 }
 
-export function ControllersBooksListDataFromJSONTyped(
+export function ControllersBooksListResponseFromJSONTyped(
 	json: any,
 	ignoreDiscriminator: boolean,
-): ControllersBooksListData {
+): ControllersBooksListResponse {
 	if (json === undefined || json === null) {
 		return json;
 	}
@@ -49,7 +49,7 @@ export function ControllersBooksListDataFromJSONTyped(
 	};
 }
 
-export function ControllersBooksListDataToJSON(value?: ControllersBooksListData | null): any {
+export function ControllersBooksListResponseToJSON(value?: ControllersBooksListResponse | null): any {
 	if (value === undefined) {
 		return undefined;
 	}
