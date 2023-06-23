@@ -9,9 +9,9 @@ import (
 
 var db *sqlx.DB
 
-func GetDB() *sqlx.DB {
+func GetDB(dsn string) *sqlx.DB {
 	if db == nil {
-		newDb, err := sqlx.Open("sqlite3", os.Getenv("DATABASE_URL"))
+		newDb, err := sqlx.Open("sqlite3", dsn)
 
 		if err != nil {
 			println(err.Error())

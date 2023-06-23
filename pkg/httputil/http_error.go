@@ -1,6 +1,7 @@
 package httputil
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -50,6 +51,8 @@ func RespondInternalServerError(ctx *gin.Context, msg string) {
 
 func RespondNotFoundQuery[T any](ctx *gin.Context, msg string, obj *T, err error) bool {
 	if err != nil {
+		log.Fatalln(err.Error())
+
 		RespondInternalServerError(ctx, err.Error())
 
 		return false
@@ -66,6 +69,8 @@ func RespondNotFoundQuery[T any](ctx *gin.Context, msg string, obj *T, err error
 
 func RespondInternalServerErrorQuery[T any](ctx *gin.Context, msg string, obj *T, err error) bool {
 	if err != nil || obj == nil {
+		log.Fatalln(err.Error())
+
 		RespondInternalServerError(ctx, msg)
 
 		return false

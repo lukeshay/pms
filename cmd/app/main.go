@@ -1,11 +1,14 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
+	// "github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/lukeshay/pms/pkg/adapters"
 	"github.com/lukeshay/pms/pkg/auth"
@@ -14,6 +17,13 @@ import (
 	"github.com/lukeshay/pms/pkg/repositories"
 
 	_ "github.com/lukeshay/pms/docs"
+)
+
+var (
+	dsn       = flag.String("dsn", os.Getenv("DATABASE_URL"), "datasource name")
+	addr      = flag.String("addr", ":3000", "bind address")
+	jwtSecret = flag.String("jwt-secret", os.Getenv("JWT_SECRET"), "jwt secret")
+	dist      = flag.String("dist", "frontend-dist", "frontend dist directory")
 )
 
 func RequireAuth() gin.HandlerFunc {
@@ -66,6 +76,22 @@ func Cors() gin.HandlerFunc {
 
 // @BasePath  /api
 func main() {
+	flag.Parse()
+
+	if *dsn == "" {
+		log.Fatalln("dsn required")
+		return
+	} else if *addr == "" {
+		log.Fatalln("addr required")
+		return
+	} else if *jwtSecret == "" {
+		log.Fatalln("jwt-secret required")
+		return
+	} else if *dist == "" {
+		log.Fatalln("dist required")
+		return
+	}
+
 	environment, present := os.LookupEnv("ENVIRONMENT")
 	if !present {
 		environment = "production"
@@ -73,15 +99,13 @@ func main() {
 
 	r := gin.Default()
 
-	db := adapters.GetDB()
+	db := adapters.GetDB(*dsn)
 	auther := &auth.Auth{
-		JWTSecret:     os.Getenv("JWT_SECRET"),
+		JWTSecret:     *jwtSecret,
 		SigningMethod: auth.SigningMethodHMAC,
 	}
 	userRepository := repositories.NewUserRepository(db)
-	userRepository.CreateTable()
 	bookRepository := repositories.NewBookRepository(db)
-	bookRepository.CreateTable()
 
 	r.Use(gin.Logger(), gin.Recovery(), Cors())
 
@@ -111,6 +135,25 @@ func main() {
 		auth.SetClaims(ctx, claims)
 		ctx.Next()
 	})
+
+	// ============================= Start of routes =============================
+
+	if environment != "development" {
+		gin.SetMode(gin.ReleaseMode)
+		r.LoadHTMLGlob(fmt.Sprintf("%s/*.html", *dist))
+		r.Use(func(ctx *gin.Context) {
+			if strings.HasPrefix(ctx.Request.URL.Path, "/assets") {
+				ctx.Header("Cache-Control", "max-age=604800000")
+			}
+
+			ctx.Next()
+		})
+		// r.Use(static.Serve("/", static.LocalFile(*dist, true)))
+		r.Static("/assets", fmt.Sprintf("%s/assets", *dist))
+		r.NoRoute(func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.html", gin.H{})
+		})
+	}
 
 	v1 := r.Group("/api/v1")
 
@@ -143,17 +186,5 @@ func main() {
 		}
 	}
 
-	if environment != "development" {
-		gin.SetMode(gin.ReleaseMode)
-		r.Static("/assets", "./frontend-dist/assets")
-		r.NoRoute(func(c *gin.Context) {
-			c.File("./frontend-dist/index.html")
-			c.Status(200)
-		})
-	}
-
-	log.Fatal(r.Run(":3000"))
+	log.Fatalln(r.Run(*addr))
 }
-
-// /api/v1/auth/sign-in/
-// /api/v1/auth/sign-in/

@@ -14,6 +14,8 @@ type Inputs = {
 };
 
 const SignIn = () => {
+	console.log("SignIn")
+	
 	const { setTokens } = useTokens();
 	const navigate = useNavigate();
 	const {

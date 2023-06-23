@@ -23,11 +23,11 @@ type CreateBookInputs = {
 	finishedAt: Date;
 };
 
-const UpsertBookSplitPanel: FC<{ onSuccess: () => Promise<void> | void; onCancel: () => Promise<void> | void; book?: ModelsBook }> = ({
-	onSuccess,
-	onCancel,
-	book
-}) => {
+const UpsertBookSplitPanel: FC<{
+	onSuccess: () => Promise<void> | void;
+	onCancel: () => Promise<void> | void;
+	book?: ModelsBook;
+}> = ({ onSuccess, onCancel, book }) => {
 	const [error, setError] = useState<string | undefined>(undefined);
 	const {
 		register,
@@ -38,7 +38,7 @@ const UpsertBookSplitPanel: FC<{ onSuccess: () => Promise<void> | void; onCancel
 	const onSubmit = handleSubmit(async (data) => {
 		try {
 			if (book) {
-				await booksApi.v1BooksIdPut({id: book.id, book: data})
+				await booksApi.v1BooksIdPut({ id: book.id, book: data });
 			} else {
 				await booksApi.v1BooksPost({ book: data });
 			}
@@ -184,7 +184,6 @@ const Root = () => {
 		if (!selected) {
 			return;
 		}
-
 
 		try {
 			await booksApi.v1BooksIdDelete({ id: selected });

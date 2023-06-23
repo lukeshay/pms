@@ -1,10 +1,10 @@
-import clsx from "clsx";
 import { forwardRef } from "react";
 import { Form as RRForm, FormProps } from "react-router-dom";
+import { cn } from "../lib/cn";
 
 export const Form = forwardRef<HTMLFormElement, FormProps & { error?: string }>(
 	({ className, error, children, ...props }, ref) => (
-		<RRForm ref={ref} className={clsx("w-full max-w-3xl space-y-4", className)} {...props}>
+		<RRForm ref={ref} className={cn("w-full max-w-3xl space-y-4", className)} {...props}>
 			{error && (
 				<div className="alert alert-error">
 					<svg

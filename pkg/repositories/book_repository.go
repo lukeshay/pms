@@ -17,29 +17,6 @@ func NewBookRepository(db *sqlx.DB) *BookRepository {
 	}
 }
 
-func (r *BookRepository) CreateTable() {
-	_, err := r.db.Exec(`CREATE TABLE IF NOT EXISTS books (
-		id TEXT PRIMARY KEY,
-		user_id TEXT NOT NULL,
-		title TEXT NOT NULL,
-		author TEXT NOT NULL,
-		rating INTEGER,
-		purchased_at TIMESTAMP,
-		finished_at TIMESTAMP,
-		created_at TIMESTAMP NOT NULL,
-		created_by TEXT NOT NULL,
-		updated_at TIMESTAMP NOT NULL,
-		updated_by TEXT NOT NULL,
-		deleted_at TIMESTAMP,
-		deleted_by TEXT,
-		FOREIGN KEY(user_id) REFERENCES users(id)
-	)`)
-
-	if err != nil {
-		panic(err)
-	}
-}
-
 func (r *BookRepository) Get(userId, id string) (*models.Book, error) {
 	book := models.Book{}
 	err := r.db.Get(&book, "SELECT * FROM books WHERE user_id = $1 AND id = $2", userId, id)

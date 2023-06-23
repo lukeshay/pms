@@ -6,7 +6,6 @@ import "./index.css";
 
 import { Root } from "./routes/root";
 import { Head } from "./components/head";
-import { API_URL } from "./lib/constants";
 import { SignIn } from "./routes/sign-in";
 
 const router = createBrowserRouter([
@@ -24,7 +23,6 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	<React.StrictMode>
 		<Head>
-			{/* <link as="fetch" crossOrigin="anonymous" href={`${API_URL}/auth/`} rel="preload" /> */}
 			<title>{"PMS"}</title>
 		</Head>
 		<RouterProvider router={router} />

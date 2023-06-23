@@ -1,17 +1,20 @@
-# fly.toml app configuration file generated for pms-kratos on 2023-06-15T09:20:23-05:00
+# fly.toml app configuration file generated for pms on 2023-06-22T16:23:40-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
+# See https://fly.io/docs/litefs/getting-started/ for litefs configuration documentation.
 
 app = "pms"
-primary_region = "ord"
+primary_region = "sea"
 
-[build]
-   dockerfile = "Dockerfile"
+[[mounts]]
+  source = "pms_litefs"
+  destination = "/var/lib/litefs"
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
+  protocol = "tcp"
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 0

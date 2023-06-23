@@ -7,7 +7,8 @@ services:
     environment:
       JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: ${DATABASE_URL}
+      ENVIRONMENT: staging
     ports:
       - "3000:3000"
-    volumes:
-      - ./db:/app/db
+    # volumes:
+    #   - ./tmp/litefs:/litefs
