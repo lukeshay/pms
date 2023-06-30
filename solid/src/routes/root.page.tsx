@@ -1,13 +1,13 @@
 import { useRouteData } from "@solidjs/router";
 import { type Component, For, JSX, createSignal } from "solid-js";
 
+import { BookUpsertSplitPanel } from "../components/books/book-upsert-split-panel";
 import { Button } from "../components/ui/button";
+import { Container } from "../components/ui/container";
 import { useToast } from "../components/ui/toast";
 import { BaseLayout } from "../layouts/base-layout";
 import { useGlobalStore } from "../provider";
 import rootLoader from "./root.loader";
-import { BookUpsertSplitPanel } from "../components/books/book-upsert-split-panel";
-import { Container } from "../components/ui/container";
 
 const RootPage: Component = () => {
 	const [formError, setFormError] = createSignal<string>();
@@ -47,10 +47,10 @@ const RootPage: Component = () => {
 		);
 	};
 
-	const handleChange: JSX.ChangeEventHandlerUnion<HTMLInputElement, Event> = ({ target }) => {
-		setSelected(target.value);
+	const handleChange = (id: string) => {
+		setSelected(id);
 
-		const book = data()!.books.find((book) => book.id === target.value)!;
+		const book = data()!.books.find((book) => book.id === id)!;
 
 		setSplitPanel(
 			<BookUpsertSplitPanel
@@ -113,7 +113,7 @@ const RootPage: Component = () => {
 										<input
 											checked={selected() === book.id}
 											class="radio"
-											onChange={handleChange}
+											onChange={(event) => handleChange(event.target.value)}
 											type="radio"
 											value={book.id}
 										/>

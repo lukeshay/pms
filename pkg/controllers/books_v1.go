@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/lukeshay/pms/pkg/auth"
 	"github.com/lukeshay/pms/pkg/httputil"
 	"github.com/lukeshay/pms/pkg/models"
 	"github.com/lukeshay/pms/pkg/repositories"
+	"github.com/oklog/ulid/v2"
 )
 
 type BooksV1Controller struct {
@@ -120,7 +120,7 @@ func (c *BooksV1Controller) Post(ctx *gin.Context) {
 	}
 
 	userId := auth.RequireClaims(ctx).User.Id
-	bookId := uuid.NewString()
+	bookId := ulid.Make().String()
 
 	book := &models.Book{
 		Id:          bookId,

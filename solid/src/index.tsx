@@ -6,8 +6,8 @@ import { Toaster } from "solid-toast";
 
 import "./index.css";
 import { Provider } from "./provider";
-import rootLoader from "./routes/root.loader";
 import profileLoader from "./routes/profile.loader";
+import rootLoader from "./routes/root.loader";
 
 const root = document.querySelector("#root");
 

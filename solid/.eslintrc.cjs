@@ -46,6 +46,11 @@ module.exports = {
 		"regexp",
 		"sonar",
 	],
+	rules: {
+		"@typescript-eslint/no-unused-vars": "error",
+		"solid/reactivity": "error",
+		"sonar/no-dead-store": "off",
+	},
 	settings: {
 		"import/resolver": {
 			node: true,

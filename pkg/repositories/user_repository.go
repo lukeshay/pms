@@ -50,7 +50,7 @@ func (r *UserRepository) Update(user *models.User) error {
 
 	query := `
 		UPDATE users 
-		SET email = :email, email_verified = :email_verified, first_name = :first_name, last_name = :last_name, password = :password, updated_at = :updated_at, updated_by = :updated_by
+		SET email = :email, email_verified = :email_verified, first_name = :first_name, last_name = :last_name, updated_at = :updated_at, updated_by = :updated_by
 		WHERE id = :id
 	`
 

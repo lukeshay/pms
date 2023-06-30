@@ -1,9 +1,10 @@
 import { JSX, ParentComponent, Show } from "solid-js";
+
 import { Container } from "../ui/container";
 
 export type ProfileSectionProperties = {
-	header: JSX.Element;
 	description?: JSX.Element;
+	header: JSX.Element;
 };
 
 export const ProfileSection: ParentComponent<ProfileSectionProperties> = (properties) => (

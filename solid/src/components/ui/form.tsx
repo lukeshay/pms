@@ -1,10 +1,11 @@
 import { JSX, ParentComponent } from "solid-js";
 
 import { classListToClassValues, cn } from "../../lib/cn";
+import { Button } from "./button";
 
 export type FormProperties = JSX.HTMLAttributes<HTMLDivElement> & {
-	error?: JSX.Element;
 	actions?: JSX.Element;
+	error?: JSX.Element;
 	secondaryActions?: JSX.Element;
 };
 
@@ -30,7 +31,16 @@ export const Form: ParentComponent<FormProperties> = (properties) => (
 		{properties.children}
 		<div class={cn("flex items-center pt-8", properties.secondaryActions ? "justify-between" : "justify-end")}>
 			{properties.secondaryActions && <div class="flex items-center space-x-2">{properties.secondaryActions}</div>}
-			<div class={"flex items-center space-x-2"}>{properties.actions}</div>
+			<div class={"flex items-center space-x-2"}>
+				{properties.actions ?? (
+					<>
+						<Button formAction="reset">{"Cancel"}</Button>
+						<Button formAction="submit" variant="primary">
+							{"Save"}
+						</Button>
+					</>
+				)}
+			</div>
 		</div>
 	</div>
 );

@@ -78,3 +78,11 @@ func RespondInternalServerErrorQuery[T any](ctx *gin.Context, msg string, obj *T
 
 	return true
 }
+
+func RespondForbidden(ctx *gin.Context, msg string) {
+	ctx.JSON(http.StatusForbidden, HTTPError{
+		Error: HTTPErrorError{
+			Message: msg,
+		},
+	})
+}

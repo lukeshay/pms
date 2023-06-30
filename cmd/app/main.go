@@ -175,6 +175,19 @@ func main() {
 		}
 	}
 
+	usersV1Controller := controllers.NewUsersV1Controller(controllers.UsersV1ControllerInput{
+		UserRepository: userRepository,
+	})
+	{
+		usersV1 := v1.Group(usersV1Controller.BasePath())
+		{
+			usersV1.Use(RequireAuth())
+
+			usersV1.GET("/:id/", usersV1Controller.Get)
+			usersV1.PUT("/:id/", usersV1Controller.Put)
+		}
+	}
+
 	authV1Controller := controllers.NewAuthV1Controller(controllers.NewAuthV1ControllerInput{
 		UserRepository: userRepository,
 		Auth:           auther,

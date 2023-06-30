@@ -2,12 +2,12 @@ import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-zod";
 import { ModelsBook } from "@pms/api";
 import { Component } from "solid-js";
+
 import { BookUpsertSchema, bookUpsertSchema } from "../../schemas/book-schema";
+import { Button } from "../ui/button";
 import { Form } from "../ui/form";
-import { FormButtons } from "../ui/form-buttons";
 import { FormControl } from "../ui/form-control";
 import { SplitPanel } from "../ui/split-panel";
-import { Button } from "../ui/button";
 
 export type BookUpsertSplitPanelProperties = {
 	book?: ModelsBook;
@@ -31,24 +31,9 @@ export const BookUpsertSplitPanel: Component<BookUpsertSplitPanelProperties> = (
 	});
 
 	return (
-		<SplitPanel onSplitPanelClose={properties.onCancel} header={`${properties.book ? "Update" : "Create"} Book`}>
+		<SplitPanel header={`${properties.book ? "Update" : "Create"} Book`} onSplitPanelClose={properties.onCancel}>
 			<form use:form>
 				<Form
-					actions={
-						<>
-							<Button
-								formAction="none"
-								onClick={async () => {
-									await properties.onCancel();
-								}}
-							>
-								{"Cancel"}
-							</Button>
-							<Button type="submit" variant="primary">
-								{properties.book ? "Update" : "Create"}
-							</Button>
-						</>
-					}
 					error={properties.error}
 					secondaryActions={properties.book && <Button formAction="none">{"Delete"}</Button>}
 				>

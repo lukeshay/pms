@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"github.com/lukeshay/pms/pkg/auth"
 	"github.com/lukeshay/pms/pkg/httputil"
 	"github.com/lukeshay/pms/pkg/models"
@@ -96,7 +96,7 @@ func (c *AuthV1Controller) Post(ctx *gin.Context) {
 		return
 	}
 
-	userId := uuid.NewString()
+	userId := ulid.Make().String()
 
 	user := &models.User{
 		Email:         request.Email,

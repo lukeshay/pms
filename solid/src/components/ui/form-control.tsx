@@ -1,13 +1,14 @@
 import { JSX, ParentComponent } from "solid-js";
-import { ClassList } from "../../types/solid-types";
+
 import { classListToClassValues, cn } from "../../lib/cn";
+import { ClassList } from "../../types/solid-types";
 
 export type FormControlProperties = {
+	class?: string;
+	classList?: ClassList;
 	error?: null | string | string[];
 	label: JSX.Element;
 	name: string;
-	class?: string;
-	classList?: ClassList;
 };
 
 export const FormControl: ParentComponent<FormControlProperties> = (properties) => (

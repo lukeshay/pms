@@ -1,8 +1,8 @@
 import { type Component } from "solid-js";
 
-import { BaseLayout } from "../layouts/base-layout";
-import { ProfileFormSection } from "../components/profile/profile-form-section";
 import { PasswordFormSection } from "../components/profile/password-form-section";
+import { ProfileFormSection } from "../components/profile/profile-form-section";
+import { BaseLayout } from "../layouts/base-layout";
 
 const ProfilePage: Component = () => (
 	<BaseLayout>

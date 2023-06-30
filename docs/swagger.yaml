@@ -160,6 +160,28 @@ definitions:
     - author
     - title
     type: object
+  controllers.UsersGetResponse:
+    properties:
+      user:
+        $ref: '#/definitions/models.User'
+    required:
+    - user
+    type: object
+  controllers.UsersPostRequest:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      userId:
+        type: string
+    required:
+    - email
+    - firstName
+    - lastName
+    type: object
   httputil.HTTPError:
     properties:
       error:
@@ -525,6 +547,85 @@ paths:
       summary: Update book by id
       tags:
       - books
+  /v1/users/{id}/:
+    get:
+      consumes:
+      - application/json
+      description: get user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.UsersGetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Get user by id
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: put user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.UsersPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.UsersGetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Update user by id
+      tags:
+      - users
 securityDefinitions:
   ApiKeyAuth:
     description: Bearer token for access control

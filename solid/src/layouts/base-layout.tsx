@@ -27,10 +27,10 @@ export const BaseLayout: ParentComponent<BaseLayoutProperties> = (properties) =>
 								{state.claims && (
 									<li>
 										<A
-											href="/"
 											classList={{
 												active: window.location.pathname === "/",
 											}}
+											href="/"
 										>
 											{"Books"}
 										</A>

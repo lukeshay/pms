@@ -7,13 +7,13 @@ export const bookSchema = z.object({
 	deletedAt: z.string().optional(),
 	deletedBy: z.string().optional(),
 	finishedAt: z.string().optional(),
-	id: z.string().uuid(),
+	id: z.string().uuid().ulid(),
 	purchasedAt: z.string().optional(),
 	rating: z.number().min(1).max(5).optional(),
 	title: z.string().nonempty(),
 	updatedAt: z.string().nonempty(),
 	updatedBy: z.string().nonempty(),
-	userId: z.string().uuid().nonempty(),
+	userId: z.string().uuid().ulid().nonempty(),
 });
 
 export const bookUpsertSchema = bookSchema.omit({

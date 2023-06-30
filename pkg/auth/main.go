@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/lukeshay/pms/pkg/models"
+	"github.com/oklog/ulid/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -124,7 +124,7 @@ func (a *Auth) JWTGenerate(user *models.User) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(t.AddDate(0, 0, 7)),
 			NotBefore: jwt.NewNumericDate(t),
 			IssuedAt:  jwt.NewNumericDate(t),
-			ID:        uuid.NewString(),
+			ID:        ulid.Make().String(),
 		},
 		*user,
 	}

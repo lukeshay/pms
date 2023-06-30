@@ -1,4 +1,4 @@
-import { AuthApi, AuthClaims, BooksApi, Configuration } from "@pms/api";
+import { AuthApi, AuthClaims, BooksApi, Configuration, UsersApi } from "@pms/api";
 
 import { API_URL } from "../lib/constants";
 import { createPersistentStore } from "./create-persistent-store";
@@ -45,8 +45,9 @@ export const createGlobalStore = () => {
 		],
 	});
 
-	const booksApi = new BooksApi(configuration);
 	const authApi = new AuthApi(configuration);
+	const booksApi = new BooksApi(configuration);
+	const usersApi = new UsersApi(configuration);
 
 	const setTokens = (tokens?: Tokens) => {
 		setState("tokens", tokens);
@@ -61,5 +62,6 @@ export const createGlobalStore = () => {
 		setClaims,
 		setTokens,
 		state,
+		usersApi,
 	};
 };

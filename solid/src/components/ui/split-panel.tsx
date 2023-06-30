@@ -1,6 +1,7 @@
-import { JSX, ParentComponent } from "solid-js";
-import { Button } from "./button";
 import { TbX } from "solid-icons/tb";
+import { JSX, ParentComponent } from "solid-js";
+
+import { Button } from "./button";
 
 export type SplitPanelProperties = {
 	header: JSX.Element;
@@ -17,10 +18,10 @@ export const SplitPanel: ParentComponent<SplitPanelProperties> = (properties) =>
 					onClick={() => {
 						properties.onSplitPanelClose?.();
 					}}
-					variant="ghost"
+					class="flex items-center justify-center"
 					shape="circle"
 					size="sm"
-					class="flex items-center justify-center"
+					variant="ghost"
 				>
 					<TbX size={20} />
 				</Button>
