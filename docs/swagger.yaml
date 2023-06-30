@@ -8,12 +8,16 @@ definitions:
           type: string
         type: array
       createdAt:
+        description: When the record was created
         type: string
       createdBy:
+        description: Who created the record
         type: string
       deletedAt:
+        description: When the record was deleted
         type: string
       deletedBy:
+        description: Who deleted the record
         type: string
       email:
         type: string
@@ -49,8 +53,10 @@ definitions:
         description: the `sub` (Subject) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
         type: string
       updatedAt:
+        description: When the record was updated
         type: string
       updatedBy:
+        description: Who updated the record
         type: string
     required:
     - createdAt
@@ -172,30 +178,41 @@ definitions:
         type: string
     type: object
   models.Book:
+    description: A book
     properties:
       author:
         type: string
       createdAt:
+        description: When the record was created
         type: string
       createdBy:
+        description: Who created the record
         type: string
       deletedAt:
+        description: When the record was deleted
         type: string
       deletedBy:
+        description: Who deleted the record
         type: string
       finishedAt:
+        description: The date the book was finished
         type: string
       id:
         type: string
       purchasedAt:
+        description: The date the book was purchased
         type: string
       rating:
+        maximum: 5
+        minimum: 0
         type: integer
       title:
         type: string
       updatedAt:
+        description: When the record was updated
         type: string
       updatedBy:
+        description: Who updated the record
         type: string
       userId:
         type: string
@@ -210,14 +227,19 @@ definitions:
     - userId
     type: object
   models.User:
+    description: A user
     properties:
       createdAt:
+        description: When the record was created
         type: string
       createdBy:
+        description: Who created the record
         type: string
       deletedAt:
+        description: When the record was deleted
         type: string
       deletedBy:
+        description: Who deleted the record
         type: string
       email:
         type: string
@@ -232,8 +254,10 @@ definitions:
       password:
         type: string
       updatedAt:
+        description: When the record was updated
         type: string
       updatedBy:
+        description: Who updated the record
         type: string
     required:
     - createdAt
@@ -251,9 +275,9 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This is a sample server celler server.
+  description: This API contains CRUD operations for PMS.
   termsOfService: http://swagger.io/terms/
-  title: Some API
+  title: PMS API
   version: "1.0"
 paths:
   /v1/auth/:
@@ -503,7 +527,7 @@ paths:
       - books
 securityDefinitions:
   ApiKeyAuth:
-    description: Description for what is this security definition being used
+    description: Bearer token for access control
     in: header
     name: Authorization
     type: apiKey

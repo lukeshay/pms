@@ -416,15 +416,19 @@ const docTemplate = `{
                     }
                 },
                 "createdAt": {
+                    "description": "When the record was created",
                     "type": "string"
                 },
                 "createdBy": {
+                    "description": "Who created the record",
                     "type": "string"
                 },
                 "deletedAt": {
+                    "description": "When the record was deleted",
                     "type": "string"
                 },
                 "deletedBy": {
+                    "description": "Who deleted the record",
                     "type": "string"
                 },
                 "email": {
@@ -482,9 +486,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "description": "When the record was updated",
                     "type": "string"
                 },
                 "updatedBy": {
+                    "description": "Who updated the record",
                     "type": "string"
                 }
             }
@@ -655,6 +661,7 @@ const docTemplate = `{
             }
         },
         "models.Book": {
+            "description": "A book",
             "type": "object",
             "required": [
                 "author",
@@ -671,36 +678,46 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "createdAt": {
+                    "description": "When the record was created",
                     "type": "string"
                 },
                 "createdBy": {
+                    "description": "Who created the record",
                     "type": "string"
                 },
                 "deletedAt": {
+                    "description": "When the record was deleted",
                     "type": "string"
                 },
                 "deletedBy": {
+                    "description": "Who deleted the record",
                     "type": "string"
                 },
                 "finishedAt": {
+                    "description": "The date the book was finished",
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
                 "purchasedAt": {
+                    "description": "The date the book was purchased",
                     "type": "string"
                 },
                 "rating": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 0
                 },
                 "title": {
                     "type": "string"
                 },
                 "updatedAt": {
+                    "description": "When the record was updated",
                     "type": "string"
                 },
                 "updatedBy": {
+                    "description": "Who updated the record",
                     "type": "string"
                 },
                 "userId": {
@@ -709,6 +726,7 @@ const docTemplate = `{
             }
         },
         "models.User": {
+            "description": "A user",
             "type": "object",
             "required": [
                 "createdAt",
@@ -723,15 +741,19 @@ const docTemplate = `{
             ],
             "properties": {
                 "createdAt": {
+                    "description": "When the record was created",
                     "type": "string"
                 },
                 "createdBy": {
+                    "description": "Who created the record",
                     "type": "string"
                 },
                 "deletedAt": {
+                    "description": "When the record was deleted",
                     "type": "string"
                 },
                 "deletedBy": {
+                    "description": "Who deleted the record",
                     "type": "string"
                 },
                 "email": {
@@ -753,9 +775,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "description": "When the record was updated",
                     "type": "string"
                 },
                 "updatedBy": {
+                    "description": "Who updated the record",
                     "type": "string"
                 }
             }
@@ -763,7 +787,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
-            "description": "Description for what is this security definition being used",
+            "description": "Bearer token for access control",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -777,8 +801,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "Some API",
-	Description:      "This is a sample server celler server.",
+	Title:            "PMS API",
+	Description:      "This API contains CRUD operations for PMS.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

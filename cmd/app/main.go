@@ -16,7 +16,9 @@ import (
 	"github.com/lukeshay/pms/pkg/httputil"
 	"github.com/lukeshay/pms/pkg/repositories"
 
-	_ "github.com/lukeshay/pms/docs"
+	docs "github.com/lukeshay/pms/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var (
@@ -60,9 +62,9 @@ func Cors() gin.HandlerFunc {
 	}
 }
 
-// @title           Some API
+// @title           PMS API
 // @version         1.0
-// @description     This is a sample server celler server.
+// @description     This API contains CRUD operations for PMS.
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -72,7 +74,7 @@ func Cors() gin.HandlerFunc {
 //	@securityDefinitions.apikey	ApiKeyAuth
 //	@in                         header
 //	@name                       Authorization
-//	@description                Description for what is this security definition being used
+//	@description                Bearer token for access control
 
 // @BasePath  /api
 func main() {
@@ -185,6 +187,9 @@ func main() {
 			authV1.POST("/sign-in/", authV1Controller.PostSignIn)
 		}
 	}
+
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	log.Fatalln(r.Run(*addr))
 }

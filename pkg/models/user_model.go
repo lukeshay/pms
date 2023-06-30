@@ -1,5 +1,7 @@
 package models
 
+// User
+// @Description A user
 type User struct {
 	Timestamps
 	Id            string `json:"id" binding:"required" db:"id"`

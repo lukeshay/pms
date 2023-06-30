@@ -93,10 +93,10 @@ func (c *BooksV1Controller) Get(ctx *gin.Context) {
 }
 
 type BooksPostRequest struct {
-	UserId      string     `json:"userId"`
+	UserId      *string    `json:"userId"`
 	Title       string     `json:"title" binding:"required"`
 	Author      string     `json:"author" binding:"required"`
-	Rating      int8       `json:"rating"`
+	Rating      *int8      `json:"rating"`
 	PurchasedAt *time.Time `json:"purchasedAt"`
 	FinishedAt  *time.Time `json:"finishedAt"`
 }

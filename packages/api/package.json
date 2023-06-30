@@ -1,0 +1,16 @@
+{
+  "name": "@pms/api",
+  "version": "0.0.1",
+  "description": "",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "generate": "bunx @openapitools/openapi-generator-cli generate -i ../../docs/swagger.yaml -g typescript-fetch -o src"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "2.6.0",
+    "typescript": "5.1.5"
+  }
+}

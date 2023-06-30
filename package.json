@@ -1,0 +1,24 @@
+{
+  "name": "pms",
+  "type": "module",
+  "workspaces": [
+    "solid",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build:app && npm run build:solid",
+    "build - comment": "builds the Go application and the SolidJS frontend",
+    "build:app": "go build -o build/app ./cmd/app",
+    "build:app - comment": "builds the Go application",
+    "build:solid": "npm run --workspace @pms/api generate && npm run --workspace @pms/api build && npm run --workspace @pms/solid build",
+    "build:solid - comment": "builds the SolidJS frontend",
+    "dev:app": "air",
+    "dev:app - comment": "run the Go application in dev mode",
+    "dev:solid": "VITE_API_URL=http://127.0.0.1:3000 npm run --workspace @pms/solid dev",
+    "dev:solid - comment": "run the SolidJS frontend in dev mode",
+    "help": "node .scripts/help.js",
+    "help - comment": "prints help information (this command)",
+    "migrate": "go run cmd/migrate/main.go",
+    "migrate - comment": "run the Go migration script"
+  }
+}

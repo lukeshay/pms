@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"jsxImportSource": "solid-js",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"strict": true,
+		"target": "ESNext",
+		"typeRoots": ["./types"],
+		"types": ["vite/client"]
+	}
+}
